@@ -6,6 +6,8 @@
 #define ERROR    -1
 #define SUCCESS   0
 
+#define INVALID   LIST_DATA_TYPE_INVALID_VALUE
+
 #define LOG(...)   do { printf("%s: ", __func__); printf(__VA_ARGS__); printf("\n"); } while (0)
 #define ASSERT(condition, finally, ...)   do { if (!(condition)) { LOG(__VA_ARGS__); finally } } while (0)
 
@@ -14,7 +16,7 @@ typedef struct Node Node;
 struct Node
 {
 	Node * next;
-	void * data;
+	Data data;
 };
 
 struct List
@@ -84,7 +86,7 @@ int list_delete(List * list)
 	return SUCCESS;
 }
 
-int list_append(List * list, void * data)
+int list_append(List * list, Data data)
 {
 	ASSERT(list != NULL, return ERROR;, "List was not provided");
 
@@ -107,7 +109,7 @@ int list_append(List * list, void * data)
 	return SUCCESS;
 }
 
-int list_insert(List * list, int index, void * data)
+int list_insert(List * list, int index, Data data)
 {
 	ASSERT(list != NULL, return ERROR;, "List was not provided");
 	ASSERT(index >= 0 && index <= list->length, return ERROR;, "Invalid list index '%d'", index);
@@ -143,11 +145,11 @@ int list_insert(List * list, int index, void * data)
 	return SUCCESS;
 }
 
-void * list_remove(List * list, int index) // make sure length not zero
+Data list_remove(List * list, int index) // make sure length not zero
 {
-	ASSERT(list != NULL, return NULL;, "List was not provided");
-	ASSERT(index >= 0 && index < list->length, return NULL;, "Invalid list index '%d'", index);
-	ASSERT(list->length > 0, return NULL;, "Cannot remove from an empty list");
+	ASSERT(list != NULL, return INVALID;, "List was not provided");
+	ASSERT(index >= 0 && index < list->length, return INVALID;, "Invalid list index '%d'", index);
+	ASSERT(list->length > 0, return INVALID;, "Cannot remove from an empty list");
 
 	Node * node = NULL;
 
@@ -174,22 +176,22 @@ void * list_remove(List * list, int index) // make sure length not zero
 	}
 
 	list->length--;
-	void * data = node->data;
+	Data data = node->data;
 	free(node);
 	return data;
 }
 
-void * list_get(List * list, int index)
+Data list_get(List * list, int index)
 {
-	ASSERT(list != NULL, return NULL;, "List was not provided");
-	ASSERT(index >= 0 && index < list->length, return NULL;, "Invalid list index '%d'", index);
-	ASSERT(list->length > 0, return NULL;, "Cannot get from an empty list");
+	ASSERT(list != NULL, return INVALID;, "List was not provided");
+	ASSERT(index >= 0 && index < list->length, return INVALID;, "Invalid list index '%d'", index);
+	ASSERT(list->length > 0, return INVALID;, "Cannot get from an empty list");
 
 	Node * node = traverse(list, index);
 	return node->data;
 }
 
-int list_set(List * list, int index, void * data)
+int list_set(List * list, int index, Data data)
 {
 	ASSERT(list != NULL, return ERROR;, "List was not provided");
 	ASSERT(index >= 0 && index < list->length, return ERROR;, "Invalid list index '%d'", index);
@@ -206,6 +208,7 @@ int list_length(List * list)
 	return list->length;
 }
 
+// NOTE: Only works with int
 int list_print(List * list)
 {
 	ASSERT(list != NULL, return ERROR;, "List was not provided");
@@ -223,7 +226,7 @@ int list_print(List * list)
 	{
 		while (current != NULL)
 		{
-			printf("| %-18p |\n", current->data);
+			printf("| %-18d |\n", current->data);
 			current = current->next;
 		}
 	}
