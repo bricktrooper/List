@@ -147,7 +147,7 @@ void * list_remove(List * list, int index) // make sure length not zero
 {
 	ASSERT(list != NULL, return NULL;, "List was not provided");
 	ASSERT(index >= 0 && index < list->length, return NULL;, "Invalid list index '%d'", index);
-	ASSERT(list->length > 0, return NULL;, "Cannot remove from empty list");
+	ASSERT(list->length > 0, return NULL;, "Cannot remove from an empty list");
 
 	Node * node = NULL;
 
@@ -174,11 +174,31 @@ void * list_remove(List * list, int index) // make sure length not zero
 	}
 
 	list->length--;
-	return SUCCESS;
+	void * data = node->data;
+	free(node);
+	return data;
 }
 
-void * list_get(List * list, int index);
-int list_set(List * list, int index, void * data);
+void * list_get(List * list, int index)
+{
+	ASSERT(list != NULL, return NULL;, "List was not provided");
+	ASSERT(index >= 0 && index < list->length, return NULL;, "Invalid list index '%d'", index);
+	ASSERT(list->length > 0, return NULL;, "Cannot get from an empty list");
+
+	Node * node = traverse(list, index);
+	return node->data;
+}
+
+int list_set(List * list, int index, void * data)
+{
+	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT(index >= 0 && index < list->length, return ERROR;, "Invalid list index '%d'", index);
+	ASSERT(list->length > 0, return ERROR;, "Cannot set to an empty list");
+
+	Node * node = traverse(list, index);
+	node->data = data;
+	return SUCCESS;
+}
 
 int list_length(List * list)
 {
