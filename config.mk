@@ -15,6 +15,8 @@ MM = clang
 # --- COMPILER FLAGS --- #
 
 CCFLAGS += -std=c17
+CCFLAGS += -Wall
+CCFLAGS += -Wpedantic
 
 # --- LINKER FLAGS --- #
 

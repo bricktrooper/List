@@ -59,11 +59,11 @@ int main(void)
 	list_append(list, (void *)4);
 	list_append(list, (void *)3);
 	list_print(list);
-	printf("%d\n", (int)list_remove(list, list_length(list) - 1));
-	printf("%d\n", (int)list_remove(list, list_length(list) - 1));
-	printf("%d\n", (int)list_remove(list, list_length(list) - 1));
-	printf("%d\n", (int)list_remove(list, list_length(list) - 1));
-	printf("%d\n", (int)list_remove(list, list_length(list) - 1));
+	printf("%p\n", list_remove(list, list_length(list) - 1));
+	printf("%p\n", list_remove(list, list_length(list) - 1));
+	printf("%p\n", list_remove(list, list_length(list) - 1));
+	printf("%p\n", list_remove(list, list_length(list) - 1));
+	printf("%p\n", list_remove(list, list_length(list) - 1));
 	list_print(list);
 
 	list_append(list, (void *)1);
@@ -72,10 +72,12 @@ int main(void)
 	list_append(list, (void *)4);
 	list_append(list, (void *)3);
 	list_print(list);
-	printf("%d\n", (int)list_get(list, 2));
+	printf("%p\n", list_get(list, 2));
 	list_set(list, 4, (void *)8);
 	list_print(list);
 
+	list_clear(list);
+	list_print(list);
 
 	list_delete(list);
 	return 0;
