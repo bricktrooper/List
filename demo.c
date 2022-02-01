@@ -38,6 +38,34 @@ int main(void)
 	list_insert(list, list_length(list), (void *)8);
 	list_print(list);
 
+	list_remove(list, 5);
+	list_print(list);
+	list_remove(list, 0);
+	list_print(list);
+	list_remove(list, list_length(list) - 1);
+	list_print(list);
+	list_remove(list, 0);
+	list_remove(list, 0);
+	list_remove(list, 0);
+	list_remove(list, 0);
+	list_remove(list, 0);
+	list_remove(list, 0);
+	list_remove(list, 0);
+	list_remove(list, 0);
+	list_print(list);
+	list_append(list, (void *)1);
+	list_append(list, (void *)2);
+	list_append(list, (void *)4);
+	list_append(list, (void *)4);
+	list_append(list, (void *)3);
+	list_print(list);
+	list_remove(list, list_length(list) - 1);
+	list_remove(list, list_length(list) - 1);
+	list_remove(list, list_length(list) - 1);
+	list_remove(list, list_length(list) - 1);
+	list_remove(list, list_length(list) - 1);
+	list_print(list);
+
 	list_delete(list);
 	return 0;
 }

@@ -8,7 +8,6 @@
 
 #define LOG(...)   do { printf("%s: ", __func__); printf(__VA_ARGS__); printf("\n"); } while (0)
 #define ASSERT(condition, finally, ...)   do { if (!(condition)) { LOG(__VA_ARGS__); finally } } while (0)
-#define ASSERT_LIST_PROVIDED(list)   ASSERT(list != NULL, return ERROR;, "List was not provided")
 
 typedef struct Node Node;
 
@@ -34,11 +33,6 @@ static void initialize(List * list)
 
 static Node * traverse(List * list, int index)
 {
-	if (index < 0)
-	{
-		return NULL;
-	}
-
 	Node * current = list->head;
 	int i = 0;
 
@@ -60,7 +54,7 @@ static Node * traverse(List * list, int index)
 
 int list_clear(List * list)
 {
-	ASSERT_LIST_PROVIDED(list);
+	ASSERT(list != NULL, return ERROR;, "List was not provided");
 	Node * current = list->head;
 
 	while (current != NULL)
@@ -84,7 +78,7 @@ List * list_new(void)
 
 int list_delete(List * list)
 {
-	ASSERT_LIST_PROVIDED(list);
+	ASSERT(list != NULL, return ERROR;, "List was not provided");
 	ASSERT(list_clear(list) == SUCCESS, return ERROR;, "Failed to clear list");
 	free(list);
 	return SUCCESS;
@@ -92,14 +86,14 @@ int list_delete(List * list)
 
 int list_append(List * list, void * data)
 {
-	ASSERT_LIST_PROVIDED(list);
+	ASSERT(list != NULL, return ERROR;, "List was not provided");
 
 	Node * node = malloc(sizeof(Node));
 	ASSERT(node != NULL, return ERROR;, "Failed to allocate memory for new node");
 	node->next = NULL;
 	node->data = data;
 
-	if (list->head == NULL)
+	if (list->length == 0)
 	{
 		list->head = node;
 	}
@@ -115,49 +109,86 @@ int list_append(List * list, void * data)
 
 int list_insert(List * list, int index, void * data)
 {
-	ASSERT_LIST_PROVIDED(list);
-	ASSERT(index >= 0 || index <= list->length, return ERROR;, "Invalid list index '%d'", index);
+	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT(index >= 0 && index <= list->length, return ERROR;, "Invalid list index '%d'", index);
 
 	Node * node = malloc(sizeof(Node));
 	ASSERT(node != NULL, return ERROR;, "Failed to allocate memory for new node");
 	node->next = NULL;
 	node->data = data;
 
-	Node * previous = traverse(list, index - 1);
-
-	if (previous == NULL)
+	if (index == 0)
 	{
 		node->next = list->head;
 		list->head = node;
+
+		if (list->length == 0)
+		{
+			list->tail = list->head;
+		}
 	}
 	else
 	{
+		Node * previous = traverse(list, index - 1);
 		node->next = previous->next;
 		previous->next = node;
-	}
 
-	if (previous == list->tail)
-	{
-		list->tail = node;
+		if (list->tail == previous)
+		{
+			list->tail = node;
+		}
 	}
 
 	list->length++;
 	return SUCCESS;
 }
 
-void * list_remove(List * list, int index); // make sure length not zero
+void * list_remove(List * list, int index) // make sure length not zero
+{
+	ASSERT(list != NULL, return NULL;, "List was not provided");
+	ASSERT(index >= 0 && index < list->length, return NULL;, "Invalid list index '%d'", index);
+	ASSERT(list->length > 0, return NULL;, "Cannot remove from empty list");
+
+	Node * node = NULL;
+
+	if (index == 0)
+	{
+		node = list->head;
+		list->head = node->next;
+
+		if (list->length == 0)
+		{
+			list->tail = list->head;
+		}
+	}
+	else
+	{
+		Node * previous = traverse(list, index - 1);
+		node = previous->next;
+		previous->next = node->next;
+
+		if (list->tail == node)
+		{
+			list->tail = previous;
+		}
+	}
+
+	list->length--;
+	return SUCCESS;
+}
+
 void * list_get(List * list, int index);
 int list_set(List * list, int index, void * data);
 
 int list_length(List * list)
 {
-	ASSERT_LIST_PROVIDED(list);
+	ASSERT(list != NULL, return ERROR;, "List was not provided");
 	return list->length;
 }
 
 int list_print(List * list)
 {
-	ASSERT_LIST_PROVIDED(list);
+	ASSERT(list != NULL, return ERROR;, "List was not provided");
 	Node * current = list->head;
 
 	printf("+------- LIST -------+\n");
