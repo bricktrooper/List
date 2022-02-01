@@ -6,8 +6,9 @@
 #define ERROR    -1
 #define SUCCESS   0
 
-#define LOG(...)   do { printf("%s: ", __func__); printf(__VA_ARGS__); printf("\r\n"); } while (0)
+#define LOG(...)   do { printf("%s: ", __func__); printf(__VA_ARGS__); printf("\n"); } while (0)
 #define ASSERT(condition, finally, ...)   do { if (!(condition)) { LOG(__VA_ARGS__); finally } } while (0)
+#define ASSERT_LIST_PROVIDED(list)   ASSERT(list != NULL, return ERROR;, "List was not provided")
 
 typedef struct Node Node;
 
@@ -33,6 +34,11 @@ static void initialize(List * list)
 
 static Node * traverse(List * list, int index)
 {
+	if (index < 0)
+	{
+		return NULL;
+	}
+
 	Node * current = list->head;
 	int i = 0;
 
@@ -50,25 +56,11 @@ static Node * traverse(List * list, int index)
 	return current;
 }
 
-List * list_new()
-{
-	List * list = malloc(sizeof(List));
-	ASSERT(list != NULL, return NULL;, "Failed to allocate memory for list");
-	initialize(list);
-	return list;
-}
-
-int list_delete(List * list)
-{
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
-	ASSERT(list_clear(list) == SUCCESS, return ERROR;, "Failed to clear list");
-	free(list);
-	return SUCCESS;
-}
+// ================================================= //
 
 int list_clear(List * list)
 {
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT_LIST_PROVIDED(list);
 	Node * current = list->head;
 
 	while (current != NULL)
@@ -82,13 +74,28 @@ int list_clear(List * list)
 	return SUCCESS;
 }
 
+List * list_new(void)
+{
+	List * list = malloc(sizeof(List));
+	ASSERT(list != NULL, return NULL;, "Failed to allocate memory for list");
+	initialize(list);
+	return list;
+}
+
+int list_delete(List * list)
+{
+	ASSERT_LIST_PROVIDED(list);
+	ASSERT(list_clear(list) == SUCCESS, return ERROR;, "Failed to clear list");
+	free(list);
+	return SUCCESS;
+}
+
 int list_append(List * list, void * data)
 {
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT_LIST_PROVIDED(list);
 
 	Node * node = malloc(sizeof(Node));
 	ASSERT(node != NULL, return ERROR;, "Failed to allocate memory for new node");
-
 	node->next = NULL;
 	node->data = data;
 
@@ -102,30 +109,74 @@ int list_append(List * list, void * data)
 	}
 
 	list->tail = node;
+	list->length++;
 	return SUCCESS;
 }
 
-int list_insert(List * list, int index, void * data);
-void * list_remove(List * list, int index);
+int list_insert(List * list, int index, void * data)
+{
+	ASSERT_LIST_PROVIDED(list);
+	ASSERT(index >= 0 || index <= list->length, return ERROR;, "Invalid list index '%d'", index);
+
+	Node * node = malloc(sizeof(Node));
+	ASSERT(node != NULL, return ERROR;, "Failed to allocate memory for new node");
+	node->next = NULL;
+	node->data = data;
+
+	Node * previous = traverse(list, index - 1);
+
+	if (previous == NULL)
+	{
+		node->next = list->head;
+		list->head = node;
+	}
+	else
+	{
+		node->next = previous->next;
+		previous->next = node;
+	}
+
+	if (previous == list->tail)
+	{
+		list->tail = node;
+	}
+
+	list->length++;
+	return SUCCESS;
+}
+
+void * list_remove(List * list, int index); // make sure length not zero
 void * list_get(List * list, int index);
 int list_set(List * list, int index, void * data);
 
+int list_length(List * list)
+{
+	ASSERT_LIST_PROVIDED(list);
+	return list->length;
+}
+
 int list_print(List * list)
 {
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT_LIST_PROVIDED(list);
 	Node * current = list->head;
-	int i = 0;
 
-	printf("======= LIST =======\r\n");
-	printf("Length: %d\r\n", list->length);
-	printf("--------------------\r\n");
+	printf("+------- LIST -------+\n");
+	printf("| Length: %10d |\n", list->length);
+	printf("|--------------------|\n");
 
-	while (current != NULL)
+	if (list->length == 0)
 	{
-		printf("%p\r\n", current->data);
-		current = current->next;
+		printf("| EMPTY              |\n");
+	}
+	else
+	{
+		while (current != NULL)
+		{
+			printf("| %-18p |\n", current->data);
+			current = current->next;
+		}
 	}
 
-	printf("====================\r\n");
+	printf("+--------------------+\n");
 	return SUCCESS;
 }
