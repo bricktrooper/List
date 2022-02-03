@@ -223,23 +223,19 @@ int list_print(List * list)
 	ASSERT(list_print_data != NULL, return ERROR;, "list_print_data() is not configured");
 	Node * current = list->head;
 
-	printf("+------- LIST -------+\n");
-	printf("| Length: %10d |\n", list->length);
-	printf("|--------------------|\n");
+	printf("[");
 
-	if (list->length == 0)
+	while (current != NULL)
 	{
-		printf("| EMPTY              |\n");
-	}
-	else
-	{
-		while (current != NULL)
+		list_print_data(current->data);
+		current = current->next;
+
+		if (current != NULL)
 		{
-			list_print_data(current->data);
-			current = current->next;
+			printf(", ");
 		}
 	}
 
-	printf("+--------------------+\n");
+	printf("]\n");
 	return SUCCESS;
 }
