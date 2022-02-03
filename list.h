@@ -1,12 +1,13 @@
 #ifndef LIST_H
 #define LIST_H
 
-// These can be redefined to a custom data type
-#define LIST_DATA_TYPE                 int
-#define LIST_DATA_TYPE_INVALID_VALUE   -1
+// The list data type MUST support copy-by-value with '=' assignment.
+// All C data types except arrays should work.
+
+typedef int Data;                           // Data can be redefined using a custom data type instead of 'int'.
+#define LIST_DATA_TYPE_INVALID_VALUE   -1   // invalid value for list functions that return 'Data' values
 
 typedef struct List List;
-typedef LIST_DATA_TYPE Data;
 
 List * list_new(void);
 int list_delete(List * list);
