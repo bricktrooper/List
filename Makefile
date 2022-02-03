@@ -16,7 +16,7 @@ list.o: list.c list.h
 	@echo "CC    $<"
 	@$(CC) $(CCFLAGS) -c $< -o $@
 
-demo.o: demo.c list.h
+demo.o: demo.c demo.h list.h
 	@echo "CC    $<"
 	@$(CC) $(CCFLAGS) -c $< -o $@
 

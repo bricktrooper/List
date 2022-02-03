@@ -1,13 +1,15 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include "demo.h"
+
 /*
 The list data type MUST support copy-by-value with '=' assignment.
 All C data types except arrays should work.
 */
 
-typedef int Data;                           // Data can be redefined using a custom data type instead of 'int'
-#define LIST_DATA_TYPE_INVALID_VALUE   -1   // invalid value for list functions that return 'Data' values
+typedef Person Data;                                       // Data can be redefined using a custom data type instead of 'int'
+#define LIST_DATA_TYPE_INVALID_VALUE   (Person){"?", -1}   // invalid value for list functions that return 'Data' values
 
 typedef struct List List;
 
