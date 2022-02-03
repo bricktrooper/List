@@ -26,6 +26,8 @@ struct List
 	Node * tail;
 };
 
+static void (* list_print_data)(Data data) = NULL;   // function pointer for printing a single list item (user defined)
+
 static void initialize(List * list)
 {
 	list->length = 0;
@@ -56,7 +58,7 @@ static Node * traverse(List * list, int index)
 
 int list_clear(List * list)
 {
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT(list != NULL, return ERROR;, "List not provided");
 	Node * current = list->head;
 
 	while (current != NULL)
@@ -80,7 +82,7 @@ List * list_new(void)
 
 int list_delete(List * list)
 {
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT(list != NULL, return ERROR;, "List not provided");
 	ASSERT(list_clear(list) == SUCCESS, return ERROR;, "Failed to clear list");
 	free(list);
 	return SUCCESS;
@@ -88,7 +90,7 @@ int list_delete(List * list)
 
 int list_append(List * list, Data data)
 {
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT(list != NULL, return ERROR;, "List not provided");
 
 	Node * node = malloc(sizeof(Node));
 	ASSERT(node != NULL, return ERROR;, "Failed to allocate memory for new node");
@@ -111,7 +113,7 @@ int list_append(List * list, Data data)
 
 int list_insert(List * list, int index, Data data)
 {
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT(list != NULL, return ERROR;, "List not provided");
 	ASSERT(index >= 0 && index <= list->length, return ERROR;, "Invalid list index '%d'", index);
 
 	Node * node = malloc(sizeof(Node));
@@ -147,7 +149,7 @@ int list_insert(List * list, int index, Data data)
 
 Data list_remove(List * list, int index) // make sure length not zero
 {
-	ASSERT(list != NULL, return INVALID;, "List was not provided");
+	ASSERT(list != NULL, return INVALID;, "List not provided");
 	ASSERT(index >= 0 && index < list->length, return INVALID;, "Invalid list index '%d'", index);
 	ASSERT(list->length > 0, return INVALID;, "Cannot remove from an empty list");
 
@@ -183,7 +185,7 @@ Data list_remove(List * list, int index) // make sure length not zero
 
 Data list_get(List * list, int index)
 {
-	ASSERT(list != NULL, return INVALID;, "List was not provided");
+	ASSERT(list != NULL, return INVALID;, "List not provided");
 	ASSERT(index >= 0 && index < list->length, return INVALID;, "Invalid list index '%d'", index);
 	ASSERT(list->length > 0, return INVALID;, "Cannot get from an empty list");
 
@@ -193,7 +195,7 @@ Data list_get(List * list, int index)
 
 int list_set(List * list, int index, Data data)
 {
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT(list != NULL, return ERROR;, "List not provided");
 	ASSERT(index >= 0 && index < list->length, return ERROR;, "Invalid list index '%d'", index);
 	ASSERT(list->length > 0, return ERROR;, "Cannot set to an empty list");
 
@@ -204,14 +206,21 @@ int list_set(List * list, int index, Data data)
 
 int list_length(List * list)
 {
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT(list != NULL, return ERROR;, "List not provided");
 	return list->length;
 }
 
-// NOTE: Only works with int
+int list_set_print_data(void (* function)(Data data))
+{
+	ASSERT(function != NULL, return ERROR;, "Function not provided");
+	list_print_data = function;
+	return SUCCESS;
+}
+
 int list_print(List * list)
 {
-	ASSERT(list != NULL, return ERROR;, "List was not provided");
+	ASSERT(list != NULL, return ERROR;, "List not provided");
+	ASSERT(list_print_data != NULL, return ERROR;, "list_print_data() is not configured");
 	Node * current = list->head;
 
 	printf("+------- LIST -------+\n");
@@ -226,7 +235,7 @@ int list_print(List * list)
 	{
 		while (current != NULL)
 		{
-			printf("| %-18d |\n", current->data);
+			list_print_data(current->data);
 			current = current->next;
 		}
 	}

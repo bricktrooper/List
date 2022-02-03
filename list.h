@@ -20,4 +20,7 @@ int list_set(List * list, int index, Data data);
 int list_length(List * list);
 int list_print(List * list);   // only works for int
 
+
+int list_set_print_data(void (* function)(Data data));
+
 #endif /* LIST_H */

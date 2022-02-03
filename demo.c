@@ -2,9 +2,16 @@
 
 #include "list.h"
 
+void print_int(int value)
+{
+	printf("%d", value);
+}
+
 int main(void)
 {
 	List * list = list_new();
+
+	list_set_print_data(print_int);
 
 	list_print(list);
 	list_append(list, 0);
