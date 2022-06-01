@@ -7,6 +7,7 @@
 #define SUCCESS   0
 
 #define INVALID   LIST_DATA_TYPE_INVALID_VALUE
+#define Data      LIST_DATA_TYPE
 
 #define LOG(...)   do { printf("%s: ", __func__); printf(__VA_ARGS__); printf("\n"); } while (0)
 #define ASSERT(condition, finally, ...)   do { if (!(condition)) { LOG(__VA_ARGS__); finally } } while (0)

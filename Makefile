@@ -20,6 +20,5 @@ demo.o: demo.c list.h
 	@echo "CC    $<"
 	@$(CC) $(CCFLAGS) -c $< -o $@
 
-.PHONY:
 clean:
 	@rm -rf *.o list
